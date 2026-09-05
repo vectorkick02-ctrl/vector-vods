@@ -19,7 +19,6 @@ HTTP_HEADERS = {
 }
 
 GITHUB_HEADERS = {
-    "Authorization": f"Bearer {GITHUB_TOKEN}",
     "Accept": "application/vnd.github+json",
     "User-Agent": "vod-release-workflow",
 }
