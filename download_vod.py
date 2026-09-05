@@ -11,7 +11,6 @@ KICK_API_URL = f"https://kick.com/api/v2/channels/{CHANNEL}/videos"
 WORKSPACE = Path(os.environ.get("WORKSPACE_DIR", "/mnt/workspace"))
 
 GITHUB_REPOSITORY = os.environ["GITHUB_REPOSITORY"]
-GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
 GITHUB_ENV = Path(os.environ["GITHUB_ENV"])
 
 HTTP_HEADERS = {
