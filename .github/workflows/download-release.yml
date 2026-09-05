@@ -1,0 +1,66 @@
+name: Download and Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Prepare environment
+        run: |
+          sudo mkdir -p /mnt/workspace
+          sudo chown "$USER:$USER" /mnt/workspace
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg p7zip-full
+
+      - name: Download oldest pending VOD
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WORKSPACE_DIR: /mnt/workspace
+        run: python download_vod.py
+
+      - name: Get file size
+        if: env.HAS_VOD == 'true'
+        working-directory: ${{ env.VOD_DIR }}
+        run: echo "FILE_SIZE=$(stat --format=%s "${FILE_NAME}")" >> "$GITHUB_ENV"
+
+      - name: Split large file
+        if: env.HAS_VOD == 'true'
+        working-directory: ${{ env.VOD_DIR }}
+        run: |
+          if [ "${FILE_SIZE}" -ge 2147483648 ]; then
+            7z a -mx=0 -v2147483647b "${FILE_NAME}.7z" "${FILE_NAME}"
+            rm -- "${FILE_NAME}"
+          fi
+
+      - name: Prepare release assets
+        if: env.HAS_VOD == 'true'
+        working-directory: ${{ env.VOD_DIR }}
+        run: |
+          {
+            echo 'RELEASE_FILES<<EOF'
+            for part in $(seq 1 50); do
+              printf '%s/*.%03d\n' "${VOD_DIR}" "${part}"
+            done
+            echo 'EOF'
+          } >> "$GITHUB_ENV"
+
+      - name: Create Release
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          name: ${{ env.RELEASE_NAME }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          body: ${{ env.RELEASE_BODY }}
+
+      - name: Upload assets (001-050)
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: ${{ env.RELEASE_FILES }}
