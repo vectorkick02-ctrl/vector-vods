@@ -19,47 +19,156 @@ jobs:
 
       - name: Download oldest pending VOD
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WORKSPACE_DIR: /mnt/workspace
         run: python download_vod.py
 
       - name: Get file size
         if: env.HAS_VOD == 'true'
         working-directory: ${{ env.VOD_DIR }}
-        run: echo "FILE_SIZE=$(stat --format=%s "${FILE_NAME}")" >> "$GITHUB_ENV"
+        run: |
+          FILE_SIZE="$(stat --format=%s "${FILE_NAME}")"
+          echo "FILE_SIZE=$FILE_SIZE" >> "$GITHUB_ENV"
 
       - name: Split large file
         if: env.HAS_VOD == 'true'
         working-directory: ${{ env.VOD_DIR }}
         run: |
           if [ "${FILE_SIZE}" -ge 2147483648 ]; then
-            7z a -mx=0 -v2147483647b "${FILE_NAME}.7z" "${FILE_NAME}"
+            7z a \
+              -mx=0 \
+              -v2147483647b \
+              "${FILE_NAME}.7z" \
+              "${FILE_NAME}"
+
             rm -- "${FILE_NAME}"
           fi
 
-      - name: Prepare release assets
-        if: env.HAS_VOD == 'true'
-        working-directory: ${{ env.VOD_DIR }}
-        run: |
-          {
-            echo 'RELEASE_FILES<<EOF'
-            for part in $(seq 1 50); do
-              printf '%s/*.%03d\n' "${VOD_DIR}" "${part}"
-            done
-            echo 'EOF'
-          } >> "$GITHUB_ENV"
-
       - name: Create Release
         if: env.HAS_VOD == 'true'
-        uses: softprops/action-gh-release@v3.0.3
+        uses: softprops/action-gh-release@v3.0.2
         with:
           name: ${{ env.RELEASE_NAME }}
           tag_name: ${{ env.RELEASE_TAG }}
-          body: ${{ env.RELEASE_BODY }}
+          body: |
+            VOD ID: `${{ env.VOD_ID }}`
+            Fecha: `${{ env.VOD_CREATED_AT }}`
 
-      - name: Upload assets (001-050)
+      - name: Upload assets (001-005)
         if: env.HAS_VOD == 'true'
-        uses: softprops/action-gh-release@v3.0.3
+        uses: softprops/action-gh-release@v3.0.2
         with:
           tag_name: ${{ env.RELEASE_TAG }}
-          files: ${{ env.RELEASE_FILES }}
+          files: |
+            ${{ env.VOD_DIR }}/*.001
+            ${{ env.VOD_DIR }}/*.002
+            ${{ env.VOD_DIR }}/*.003
+            ${{ env.VOD_DIR }}/*.004
+            ${{ env.VOD_DIR }}/*.005
+
+      - name: Upload assets (006-010)
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            ${{ env.VOD_DIR }}/*.006
+            ${{ env.VOD_DIR }}/*.007
+            ${{ env.VOD_DIR }}/*.008
+            ${{ env.VOD_DIR }}/*.009
+            ${{ env.VOD_DIR }}/*.010
+
+      - name: Upload assets (011-015)
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            ${{ env.VOD_DIR }}/*.011
+            ${{ env.VOD_DIR }}/*.012
+            ${{ env.VOD_DIR }}/*.013
+            ${{ env.VOD_DIR }}/*.014
+            ${{ env.VOD_DIR }}/*.015
+
+      - name: Upload assets (016-020)
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            ${{ env.VOD_DIR }}/*.016
+            ${{ env.VOD_DIR }}/*.017
+            ${{ env.VOD_DIR }}/*.018
+            ${{ env.VOD_DIR }}/*.019
+            ${{ env.VOD_DIR }}/*.020
+
+      - name: Upload assets (021-025)
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            ${{ env.VOD_DIR }}/*.021
+            ${{ env.VOD_DIR }}/*.022
+            ${{ env.VOD_DIR }}/*.023
+            ${{ env.VOD_DIR }}/*.024
+            ${{ env.VOD_DIR }}/*.025
+
+      - name: Upload assets (026-030)
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            ${{ env.VOD_DIR }}/*.026
+            ${{ env.VOD_DIR }}/*.027
+            ${{ env.VOD_DIR }}/*.028
+            ${{ env.VOD_DIR }}/*.029
+            ${{ env.VOD_DIR }}/*.030
+
+      - name: Upload assets (031-035)
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            ${{ env.VOD_DIR }}/*.031
+            ${{ env.VOD_DIR }}/*.032
+            ${{ env.VOD_DIR }}/*.033
+            ${{ env.VOD_DIR }}/*.034
+            ${{ env.VOD_DIR }}/*.035
+
+      - name: Upload assets (036-040)
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            ${{ env.VOD_DIR }}/*.036
+            ${{ env.VOD_DIR }}/*.037
+            ${{ env.VOD_DIR }}/*.038
+            ${{ env.VOD_DIR }}/*.039
+            ${{ env.VOD_DIR }}/*.040
+
+      - name: Upload assets (041-045)
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            ${{ env.VOD_DIR }}/*.041
+            ${{ env.VOD_DIR }}/*.042
+            ${{ env.VOD_DIR }}/*.043
+            ${{ env.VOD_DIR }}/*.044
+            ${{ env.VOD_DIR }}/*.045
+
+      - name: Upload assets (046-050)
+        if: env.HAS_VOD == 'true'
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: |
+            ${{ env.VOD_DIR }}/*.046
+            ${{ env.VOD_DIR }}/*.047
+            ${{ env.VOD_DIR }}/*.048
+            ${{ env.VOD_DIR }}/*.049
+            ${{ env.VOD_DIR }}/*.050
